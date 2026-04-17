@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToneGenPro — Professional Audio Tone &amp; Signal Generator</title>
+    <meta name="description" content="ToneGenPro is a professional audio tone and signal generator for Android. Precise 20 Hz – 20 kHz tones, sine/square/triangle/sawtooth waveforms, full DSP effects chain, sweeps, AM/FM modulation, noise, ADSR, real-time oscilloscope, and WAV/MP3 export. Built with .NET MAUI and a native C++ audio engine.">
+    <meta name="theme-color" content="#131B2E">
+    <meta name="color-scheme" content="light dark">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ToneGenPro — Professional Audio Tone &amp; Signal Generator">
+    <meta property="og:description" content="Precise tones, full DSP effects chain, sweeps, modulation, noise, ADSR, oscilloscope, WAV/MP3 export. Built with .NET MAUI + native C++.">
+    <meta property="og:url" content="https://ivanessb.github.io/ToneGenPro/">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'><rect width='1024' height='1024' rx='200' fill='%23131B2E'/><path d='M160 500 C280 500, 320 280, 420 280 C520 280, 560 720, 660 720 C760 720, 830 500, 920 500' fill='none' stroke='%2338BDF8' stroke-width='75' stroke-linecap='round'/></svg>">
+    <style>
+        :root {
+            color-scheme: light dark;
+            --bg: #f5f7fb; --bg-2: #eef2f9;
+            --surface: rgba(255, 255, 255, 0.86);
+            --surface-2: rgba(255, 255, 255, 0.55);
+            --surface-border: rgba(20, 24, 40, 0.08);
+            --text: #1b2330; --muted: #667085; --heading: #101828;
+            --link: #175cd3; --accent-1: #38BDF8; --accent-2: #8B5CF6; --accent-3: #22D3EE;
+            --shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+            --shadow-strong: 0 20px 60px rgba(16, 24, 40, 0.14);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0b1120; --bg-2: #131b2e;
+                --surface: rgba(18, 24, 38, 0.86);
+                --surface-2: rgba(30, 38, 58, 0.55);
+                --surface-border: rgba(255, 255, 255, 0.08);
+                --text: #e5e7eb; --muted: #98a2b3; --heading: #f8fafc;
+                --link: #84c5ff;
+                --shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+                --shadow-strong: 0 24px 70px rgba(0, 0, 0, 0.55);
+            }
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.7; color: var(--text);
+            background:
+                radial-gradient(1200px 600px at 10% -10%, rgba(56, 189, 248, 0.18), transparent 55%),
+                radial-gradient(1000px 600px at 110% 10%, rgba(139, 92, 246, 0.18), transparent 55%),
+                linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+            min-height: 100vh;
+        }
+        .container { max-width: 1080px; margin: 0 auto; padding: 32px 20px; }
+        a { color: var(--link); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        nav.top { display: flex; align-items: center; justify-content: space-between; padding: 10px 0 24px; gap: 16px; }
+        .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; color: var(--heading); font-size: 1.05rem; }
+        .brand .icon {
+            width: 34px; height: 34px; border-radius: 9px;
+            background: linear-gradient(160deg, #131B2E, #0B1120);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .nav-links { display: flex; gap: 18px; flex-wrap: wrap; }
+        .nav-links a { color: var(--muted); font-size: 0.95rem; }
+        .nav-links a:hover { color: var(--link); text-decoration: none; }
+        .hero {
+            display: grid; gap: 28px; grid-template-columns: 1.25fr 1fr; align-items: center;
+            background: var(--surface); border: 1px solid var(--surface-border);
+            border-radius: 28px; padding: 48px 42px;
+            box-shadow: var(--shadow-strong);
+            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: ""; position: absolute; inset: 0;
+            background: radial-gradient(600px 300px at 0% 0%, rgba(56, 189, 248, 0.15), transparent 60%),
+                        radial-gradient(600px 300px at 100% 100%, rgba(139, 92, 246, 0.15), transparent 60%);
+            pointer-events: none;
+        }
+        .hero > * { position: relative; z-index: 1; }
+        .eyebrow {
+            display: inline-block; padding: 6px 12px; border-radius: 999px;
+            font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--accent-1); background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+        }
+        .hero h1 { margin: 14px 0 10px; font-size: clamp(2rem, 4.5vw, 3rem); line-height: 1.1; color: var(--heading); letter-spacing: -0.02em; }
+        .hero h1 .grad {
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .hero p.lead { color: var(--muted); font-size: 1.08rem; margin: 0 0 22px; max-width: 54ch; }
+        .cta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 12px 20px; border-radius: 12px; font-weight: 600;
+            border: 1px solid transparent; font-size: 0.98rem;
+            transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white; box-shadow: 0 8px 20px rgba(56, 189, 248, 0.35);
+        }
+        .btn-primary:hover { transform: translateY(-1px); text-decoration: none; box-shadow: 0 12px 26px rgba(139, 92, 246, 0.35); }
+        .btn-secondary { background: transparent; color: var(--heading); border-color: var(--surface-border); }
+        .btn-secondary:hover { text-decoration: none; background: var(--surface-2); }
+        .hero-icon-wrap { display: grid; place-items: center; }
+        .hero-icon {
+            width: 100%; max-width: 280px; aspect-ratio: 1 / 1; border-radius: 32px;
+            box-shadow: 0 20px 50px rgba(11, 17, 32, 0.5), 0 0 0 1px rgba(56, 189, 248, 0.15);
+            overflow: hidden;
+        }
+        section.block { margin-top: 48px; }
+        section.block > header { text-align: center; margin-bottom: 22px; }
+        section.block h2 { font-size: clamp(1.5rem, 3vw, 2rem); margin: 6px 0 6px; color: var(--heading); letter-spacing: -0.01em; }
+        section.block .section-sub { color: var(--muted); max-width: 60ch; margin: 0 auto; }
+        .features { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+        .feature {
+            background: var(--surface); border: 1px solid var(--surface-border);
+            border-radius: 18px; padding: 20px; box-shadow: var(--shadow);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .feature:hover { transform: translateY(-2px); box-shadow: var(--shadow-strong); }
+        .feature .f-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(139, 92, 246, 0.18));
+            color: var(--accent-1); margin-bottom: 12px; font-size: 20px;
+        }
+        .feature h3 { margin: 0 0 4px; font-size: 1.02rem; color: var(--heading); }
+        .feature p { margin: 0; color: var(--muted); font-size: 0.93rem; }
+        .uses { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+        .use { padding: 18px; border-radius: 16px; background: var(--surface-2); border: 1px dashed var(--surface-border); }
+        .use h4 { margin: 0 0 6px; color: var(--heading); font-size: 1rem; }
+        .use p { margin: 0; color: var(--muted); font-size: 0.93rem; }
+        .tiers { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+        .tier {
+            position: relative; background: var(--surface); border: 1px solid var(--surface-border);
+            border-radius: 18px; padding: 22px; box-shadow: var(--shadow);
+            display: flex; flex-direction: column;
+        }
+        .tier.featured { border-color: rgba(139, 92, 246, 0.5); box-shadow: 0 16px 40px rgba(139, 92, 246, 0.22); }
+        .tier .tag {
+            position: absolute; top: -10px; right: 16px;
+            padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white;
+        }
+        .tier h4 { margin: 0; font-size: 1.05rem; color: var(--heading); }
+        .tier .price { font-size: 1.6rem; font-weight: 700; color: var(--heading); margin: 8px 0 4px; }
+        .tier .price small { font-size: 0.85rem; font-weight: 500; color: var(--muted); }
+        .tier ul { list-style: none; padding: 0; margin: 12px 0 0; flex: 1; }
+        .tier li { padding: 6px 0 6px 22px; position: relative; font-size: 0.93rem; color: var(--text); }
+        .tier li::before { content: "✓"; position: absolute; left: 0; top: 6px; color: var(--accent-1); font-weight: 700; }
+        .tier li.no::before { content: "—"; color: var(--muted); }
+        .tier li.no { color: var(--muted); }
+        .tech { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
+        .chip { padding: 6px 12px; border-radius: 999px; font-size: 0.82rem; background: var(--surface); border: 1px solid var(--surface-border); color: var(--muted); }
+
+        /* ===== Screenshots (device mockups) ===== */
+        .shots { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); justify-items: center; align-items: end; }
+        .phone {
+            width: 100%; max-width: 260px; aspect-ratio: 9 / 19;
+            border-radius: 36px; padding: 10px;
+            background: linear-gradient(160deg, #1a2238, #0b1120);
+            box-shadow: 0 24px 60px rgba(11, 17, 32, 0.45), inset 0 0 0 1.5px rgba(56, 189, 248, 0.18);
+            position: relative;
+        }
+        .phone::before {
+            content: ""; position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+            width: 60px; height: 6px; border-radius: 999px; background: #0b1120;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+        .phone .screen {
+            width: 100%; height: 100%; border-radius: 28px; overflow: hidden;
+            background: #0f1626;
+            display: block;
+        }
+        .phone-label {
+            margin-top: 10px; text-align: center; color: var(--muted); font-size: 0.88rem;
+        }
+
+        /* ===== FAQ ===== */
+        .faq { max-width: 820px; margin: 0 auto; display: grid; gap: 10px; }
+        .faq details {
+            background: var(--surface); border: 1px solid var(--surface-border);
+            border-radius: 14px; padding: 14px 18px; box-shadow: var(--shadow);
+        }
+        .faq summary {
+            cursor: pointer; font-weight: 600; color: var(--heading);
+            list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+        }
+        .faq summary::-webkit-details-marker { display: none; }
+        .faq summary::after {
+            content: "+"; color: var(--accent-1); font-size: 1.2rem; font-weight: 700;
+            transition: transform .2s ease;
+        }
+        .faq details[open] summary::after { content: "−"; }
+        .faq details p { margin: 10px 0 2px; color: var(--muted); font-size: 0.95rem; }
+
+        /* ===== Changelog ===== */
+        .log { max-width: 820px; margin: 0 auto; display: grid; gap: 14px; }
+        .log .entry {
+            background: var(--surface); border: 1px solid var(--surface-border);
+            border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow);
+        }
+        .log .entry .head {
+            display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+            border-bottom: 1px solid var(--surface-border); padding-bottom: 6px; margin-bottom: 8px;
+        }
+        .log .entry h4 { margin: 0; color: var(--heading); font-size: 1.02rem; }
+        .log .entry .pill {
+            font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+            padding: 3px 8px; border-radius: 999px; color: var(--accent-1);
+            background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.25);
+        }
+        .log .entry .when { color: var(--muted); font-size: 0.82rem; margin-left: auto; }
+        .log .entry ul { margin: 4px 0 0; padding-left: 20px; }
+        .log .entry li { margin: 4px 0; color: var(--text); font-size: 0.94rem; }
+
+        footer {
+            margin-top: 56px; padding: 24px 0 8px;
+            border-top: 1px solid var(--surface-border);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 12px; color: var(--muted); font-size: 0.9rem;
+        }
+        footer .foot-links { display: flex; gap: 18px; flex-wrap: wrap; }
+        @media (max-width: 820px) {
+            .hero { grid-template-columns: 1fr; padding: 34px 24px; text-align: left; }
+            .hero-icon-wrap { order: -1; justify-self: center; }
+            .hero-icon { max-width: 180px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <nav class="top">
+        <a class="brand" href="#top">
+            <span class="icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M160 500 C280 500, 320 280, 420 280 C520 280, 560 720, 660 720 C760 720, 830 500, 920 500"
+                          fill="none" stroke="#38BDF8" stroke-width="110" stroke-linecap="round"/>
+                </svg>
+            </span>
+            ToneGenPro
+        </a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#shots">Screens</a>
+            <a href="#uses">Use cases</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+            <a href="#changelog">Changelog</a>
+            <a href="https://github.com/ivanessb/ToneGenPro">GitHub</a>
+        </div>
+    </nav>
+
+    <section class="hero" id="top">
+        <div>
+            <span class="eyebrow">Android · .NET MAUI · Native C++</span>
+            <h1>Professional <span class="grad">audio tone &amp; signal generator</span> in your pocket.</h1>
+            <p class="lead">
+                Precise frequencies from 20 Hz to 20 kHz, four core waveforms, a full DSP effects chain,
+                sweeps, AM/FM modulation, shaped noise, ADSR envelopes, a real-time oscilloscope,
+                and WAV/MP3 export — driven by a native C++ audio engine built on miniaudio and DaisySP.
+            </p>
+            <div class="cta-row">
+                <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.ioan.florucza.tonegenpro" target="_blank" rel="noopener">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.6 2.4c-.4.4-.6.9-.6 1.6v16c0 .7.2 1.2.6 1.6l.1.1 8.9-8.9v-.2L3.6 2.4zm12 12l-3-3L4.3 3.1l10.9 6.3-2.5 2.5 2.9 2.5zm4.9-5.6l-3.2-1.8-2.8 2.8 2.8 2.8 3.3-1.9c1-.6 1-1.4-.1-1.9zM4.3 20.9l8.4-8.4 2.8 2.8-10 5.7c-.6.2-1 .2-1.2-.1z"/></svg>
+                    Get it on Google Play
+                </a>
+                <a class="btn btn-secondary" href="#features">See features</a>
+            </div>
+        </div>
+        <div class="hero-icon-wrap">
+            <div class="hero-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="100%" height="100%">
+                    <defs>
+                        <linearGradient id="bg" x1="0" y1="0" x2="0.5" y2="1">
+                            <stop offset="0%" stop-color="#131B2E"/>
+                            <stop offset="100%" stop-color="#0B1120"/>
+                        </linearGradient>
+                        <linearGradient id="wave" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#38BDF8"/>
+                            <stop offset="50%" stop-color="#22D3EE"/>
+                            <stop offset="100%" stop-color="#38BDF8"/>
+                        </linearGradient>
+                        <linearGradient id="echo" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#A78BFA" stop-opacity="0.30"/>
+                            <stop offset="50%" stop-color="#8B5CF6" stop-opacity="0.30"/>
+                            <stop offset="100%" stop-color="#A78BFA" stop-opacity="0.30"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="64" y="64" width="896" height="896" rx="180" ry="180" fill="url(#bg)"/>
+                    <line x1="200" y1="500" x2="840" y2="500" stroke="#38BDF8" stroke-opacity="0.20" stroke-width="2"/>
+                    <path d="M160 500 C280 500, 320 280, 420 280 C520 280, 560 720, 660 720 C760 720, 830 500, 920 500"
+                          fill="none" stroke="#8B5CF6" stroke-opacity="0.15" stroke-width="135" stroke-linecap="round"/>
+                    <path d="M200 490 C308 490, 340 400, 425 400 C510 400, 540 600, 635 600 C720 600, 770 490, 860 490"
+                          fill="none" stroke="#A78BFA" stroke-opacity="0.26" stroke-width="48" stroke-linecap="round"/>
+                    <path d="M190 510 C300 510, 345 410, 430 410 C515 410, 545 590, 640 590 C735 590, 790 510, 870 510"
+                          fill="none" stroke="url(#echo)" stroke-width="48" stroke-linecap="round"/>
+                    <path d="M160 500 C280 500, 320 280, 420 280 C520 280, 560 720, 660 720 C760 720, 830 500, 920 500"
+                          fill="none" stroke="url(#wave)" stroke-width="75" stroke-linecap="round"/>
+                    <rect x="68" y="68" width="888" height="888" rx="176" ry="176"
+                          fill="none" stroke="#38BDF8" stroke-opacity="0.22" stroke-width="2"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <section class="block" id="features">
+        <header>
+            <h2>Everything a tone generator should have</h2>
+            <p class="section-sub">All signal generation, modulation and effects run on a native C++ engine for low-latency, phase-accurate audio.</p>
+        </header>
+        <div class="features">
+            <div class="feature"><div class="f-icon">∿</div><h3>20 Hz – 20 kHz oscillator</h3><p>Sine, square, triangle and sawtooth waveforms with fine frequency control.</p></div>
+            <div class="feature"><div class="f-icon">⇆</div><h3>Frequency sweeps</h3><p>Linear and logarithmic sweeps across user-defined ranges and durations.</p></div>
+            <div class="feature"><div class="f-icon">≈</div><h3>AM / FM modulation</h3><p>Classic amplitude and frequency modulation with tweakable depth and rate.</p></div>
+            <div class="feature"><div class="f-icon">⎍</div><h3>ADSR envelope</h3><p>Attack / Decay / Sustain / Release shaping for percussive or evolving tones.</p></div>
+            <div class="feature"><div class="f-icon">⏚</div><h3>Noise generators</h3><p>White, pink and brown noise — useful for shaping, masking and testing.</p></div>
+            <div class="feature"><div class="f-icon">⌁</div><h3>DSP filters</h3><p>Low-pass, high-pass, band-pass and notch filters with resonance control.</p></div>
+            <div class="feature"><div class="f-icon">⟲</div><h3>Echo, reverb, chorus</h3><p>Full effects chain powered by the DaisySP library for authentic tone colouring.</p></div>
+            <div class="feature"><div class="f-icon">▓</div><h3>Bitcrusher</h3><p>Sample-rate and bit-depth reduction for gritty, lo-fi textures.</p></div>
+            <div class="feature"><div class="f-icon">📈</div><h3>Real-time oscilloscope</h3><p>Hardware-accelerated waveform rendering via SkiaSharp.</p></div>
+            <div class="feature"><div class="f-icon">⬇</div><h3>WAV &amp; MP3 export</h3><p>Render any patch to a file — 16-bit or 8-bit PCM WAV, or MP3 via LAME.</p></div>
+            <div class="feature"><div class="f-icon">★</div><h3>30+ professional presets</h3><p>Curated starting points covering every module — one tap to load.</p></div>
+            <div class="feature"><div class="f-icon">💾</div><h3>Save, export &amp; share</h3><p>Persist custom patches and share presets with other users as portable files.</p></div>
+        </div>
+    </section>
+
+    <section class="block" id="shots">
+        <header>
+            <h2>A glance inside the app</h2>
+            <p class="section-sub">Clean, touch-first layout. Every control is one tap away, and the oscilloscope draws in real time.</p>
+        </header>
+
+        <div class="shots">
+            <!-- Screen 1: Main oscillator -->
+            <div>
+                <div class="phone">
+                    <svg class="screen" viewBox="0 0 280 600" xmlns="http://www.w3.org/2000/svg" aria-label="ToneGenPro main generator screen">
+                        <defs>
+                            <linearGradient id="s1bg" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#131B2E"/><stop offset="100%" stop-color="#0B1120"/>
+                            </linearGradient>
+                            <linearGradient id="s1wave" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stop-color="#38BDF8"/><stop offset="100%" stop-color="#22D3EE"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="280" height="600" fill="url(#s1bg)"/>
+                        <!-- status bar -->
+                        <rect x="18" y="22" width="50" height="6" rx="3" fill="#38BDF8" opacity="0.55"/>
+                        <circle cx="260" cy="25" r="3" fill="#98a2b3"/>
+                        <!-- title -->
+                        <text x="20" y="58" fill="#f8fafc" font-family="Inter, sans-serif" font-size="18" font-weight="700">ToneGenPro</text>
+                        <text x="20" y="76" fill="#98a2b3" font-family="Inter, sans-serif" font-size="10">LEVEL · SMOOTH · SWEEP · NOISE</text>
+                        <!-- scope card -->
+                        <rect x="14" y="92" width="252" height="130" rx="16" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.2"/>
+                        <line x1="14" y1="157" x2="266" y2="157" stroke="#38BDF8" stroke-opacity="0.15"/>
+                        <path d="M20 157 C50 157, 60 110, 90 110 C120 110, 130 204, 160 204 C190 204, 200 157, 230 157 C250 157, 256 147, 266 157"
+                              fill="none" stroke="url(#s1wave)" stroke-width="3" stroke-linecap="round"/>
+                        <text x="26" y="112" fill="#38BDF8" font-family="Inter, sans-serif" font-size="9" font-weight="600">440.0 Hz · SINE</text>
+                        <!-- freq big number -->
+                        <text x="140" y="270" text-anchor="middle" fill="#f8fafc" font-family="Inter, sans-serif" font-size="44" font-weight="700">440</text>
+                        <text x="140" y="290" text-anchor="middle" fill="#98a2b3" font-family="Inter, sans-serif" font-size="11">Hz</text>
+                        <!-- waveform pills -->
+                        <g font-family="Inter, sans-serif" font-size="10" font-weight="600">
+                            <rect x="16" y="316" width="58" height="26" rx="13" fill="#38BDF8"/>
+                            <text x="45" y="333" text-anchor="middle" fill="#0b1120">SINE</text>
+                            <rect x="80" y="316" width="58" height="26" rx="13" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.25"/>
+                            <text x="109" y="333" text-anchor="middle" fill="#98a2b3">SQR</text>
+                            <rect x="144" y="316" width="58" height="26" rx="13" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.25"/>
+                            <text x="173" y="333" text-anchor="middle" fill="#98a2b3">TRI</text>
+                            <rect x="208" y="316" width="58" height="26" rx="13" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.25"/>
+                            <text x="237" y="333" text-anchor="middle" fill="#98a2b3">SAW</text>
+                        </g>
+                        <!-- knobs -->
+                        <g>
+                            <circle cx="60" cy="400" r="26" fill="#1a2238" stroke="#8B5CF6" stroke-opacity="0.4"/>
+                            <circle cx="60" cy="400" r="20" fill="none" stroke="#A78BFA" stroke-width="3" stroke-dasharray="90 40"/>
+                            <text x="60" y="443" text-anchor="middle" fill="#98a2b3" font-family="Inter, sans-serif" font-size="9">LEVEL</text>
+                            <circle cx="140" cy="400" r="26" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.4"/>
+                            <circle cx="140" cy="400" r="20" fill="none" stroke="#38BDF8" stroke-width="3" stroke-dasharray="60 70"/>
+                            <text x="140" y="443" text-anchor="middle" fill="#98a2b3" font-family="Inter, sans-serif" font-size="9">SMOOTH</text>
+                            <circle cx="220" cy="400" r="26" fill="#1a2238" stroke="#22D3EE" stroke-opacity="0.4"/>
+                            <circle cx="220" cy="400" r="20" fill="none" stroke="#22D3EE" stroke-width="3" stroke-dasharray="110 20"/>
+                            <text x="220" y="443" text-anchor="middle" fill="#98a2b3" font-family="Inter, sans-serif" font-size="9">DETUNE</text>
+                        </g>
+                        <!-- play bar -->
+                        <rect x="14" y="480" width="252" height="54" rx="18" fill="url(#s1wave)"/>
+                        <text x="140" y="514" text-anchor="middle" fill="#0b1120" font-family="Inter, sans-serif" font-size="14" font-weight="700">▶  PLAY</text>
+                        <!-- tab bar -->
+                        <rect x="14" y="552" width="252" height="36" rx="18" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.15"/>
+                        <g font-family="Inter, sans-serif" font-size="9" fill="#98a2b3">
+                            <text x="52" y="574" text-anchor="middle" font-weight="700" fill="#38BDF8">GEN</text>
+                            <text x="106" y="574" text-anchor="middle">FX</text>
+                            <text x="160" y="574" text-anchor="middle">PRESETS</text>
+                            <text x="228" y="574" text-anchor="middle">EXPORT</text>
+                        </g>
+                    </svg>
+                </div>
+                <div class="phone-label">Main generator · real-time scope</div>
+            </div>
+
+            <!-- Screen 2: Effects chain -->
+            <div>
+                <div class="phone">
+                    <svg class="screen" viewBox="0 0 280 600" xmlns="http://www.w3.org/2000/svg" aria-label="ToneGenPro effects chain screen">
+                        <defs>
+                            <linearGradient id="s2bg" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#131B2E"/><stop offset="100%" stop-color="#0B1120"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="280" height="600" fill="url(#s2bg)"/>
+                        <rect x="18" y="22" width="50" height="6" rx="3" fill="#8B5CF6" opacity="0.55"/>
+                        <text x="20" y="58" fill="#f8fafc" font-family="Inter, sans-serif" font-size="18" font-weight="700">Effects chain</text>
+                        <text x="20" y="76" fill="#98a2b3" font-family="Inter, sans-serif" font-size="10">FILTERS · ECHO · REVERB · CHORUS · CRUSH</text>
+                        <!-- FX modules -->
+                        <g font-family="Inter, sans-serif">
+                            <!-- Filter -->
+                            <rect x="14" y="96" width="252" height="72" rx="14" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.25"/>
+                            <text x="26" y="118" fill="#38BDF8" font-size="11" font-weight="700">⌁ FILTERS</text>
+                            <text x="250" y="118" text-anchor="end" fill="#22D3EE" font-size="10" font-weight="700">ON</text>
+                            <path d="M26 148 L90 148 Q110 148, 120 130 Q135 108, 170 140 L250 148" stroke="#38BDF8" stroke-width="2" fill="none"/>
+                            <text x="26" y="163" fill="#98a2b3" font-size="9">LP · 1.2 kHz · Q 0.9</text>
+                            <!-- Echo -->
+                            <rect x="14" y="180" width="252" height="72" rx="14" fill="#1a2238" stroke="#A78BFA" stroke-opacity="0.35"/>
+                            <text x="26" y="202" fill="#A78BFA" font-size="11" font-weight="700">⟲ ECHO</text>
+                            <text x="250" y="202" text-anchor="end" fill="#22D3EE" font-size="10" font-weight="700">ON</text>
+                            <g stroke="#A78BFA" stroke-linecap="round">
+                                <line x1="30"  y1="230" x2="30"  y2="240" stroke-width="4"/>
+                                <line x1="60"  y1="226" x2="60"  y2="244" stroke-width="4" opacity="0.85"/>
+                                <line x1="90"  y1="229" x2="90"  y2="241" stroke-width="4" opacity="0.7"/>
+                                <line x1="120" y1="231" x2="120" y2="239" stroke-width="4" opacity="0.55"/>
+                                <line x1="150" y1="232" x2="150" y2="238" stroke-width="4" opacity="0.4"/>
+                                <line x1="180" y1="233" x2="180" y2="237" stroke-width="4" opacity="0.3"/>
+                                <line x1="210" y1="234" x2="210" y2="236" stroke-width="4" opacity="0.2"/>
+                            </g>
+                            <text x="26" y="246" fill="#98a2b3" font-size="9">380 ms · Fb 0.45</text>
+                            <!-- Reverb -->
+                            <rect x="14" y="264" width="252" height="72" rx="14" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.25"/>
+                            <text x="26" y="286" fill="#22D3EE" font-size="11" font-weight="700">⌖ REVERB</text>
+                            <text x="250" y="286" text-anchor="end" fill="#22D3EE" font-size="10" font-weight="700">ON</text>
+                            <text x="26" y="320" fill="#98a2b3" font-size="9">Hall · Size 0.72 · Mix 0.35</text>
+                            <!-- Chorus -->
+                            <rect x="14" y="348" width="124" height="72" rx="14" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.2"/>
+                            <text x="26" y="370" fill="#98a2b3" font-size="11" font-weight="700">CHORUS</text>
+                            <text x="128" y="370" text-anchor="end" fill="#667085" font-size="10">OFF</text>
+                            <!-- Bitcrusher -->
+                            <rect x="142" y="348" width="124" height="72" rx="14" fill="#1a2238" stroke="#8B5CF6" stroke-opacity="0.4"/>
+                            <text x="154" y="370" fill="#A78BFA" font-size="11" font-weight="700">CRUSH</text>
+                            <text x="256" y="370" text-anchor="end" fill="#22D3EE" font-size="10" font-weight="700">ON</text>
+                            <text x="154" y="402" fill="#98a2b3" font-size="9">8-bit · 12 kHz</text>
+                            <!-- Dry/wet master -->
+                            <rect x="14" y="432" width="252" height="46" rx="14" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.18"/>
+                            <text x="26" y="454" fill="#98a2b3" font-size="10" font-weight="700">MASTER WET</text>
+                            <rect x="120" y="450" width="130" height="6" rx="3" fill="#0b1120"/>
+                            <rect x="120" y="450" width="82" height="6" rx="3" fill="#38BDF8"/>
+                        </g>
+                        <rect x="14" y="552" width="252" height="36" rx="18" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.15"/>
+                        <g font-family="Inter, sans-serif" font-size="9" fill="#98a2b3">
+                            <text x="52" y="574" text-anchor="middle">GEN</text>
+                            <text x="106" y="574" text-anchor="middle" font-weight="700" fill="#38BDF8">FX</text>
+                            <text x="160" y="574" text-anchor="middle">PRESETS</text>
+                            <text x="228" y="574" text-anchor="middle">EXPORT</text>
+                        </g>
+                    </svg>
+                </div>
+                <div class="phone-label">Full DSP effects chain</div>
+            </div>
+
+            <!-- Screen 3: Presets -->
+            <div>
+                <div class="phone">
+                    <svg class="screen" viewBox="0 0 280 600" xmlns="http://www.w3.org/2000/svg" aria-label="ToneGenPro presets screen">
+                        <defs>
+                            <linearGradient id="s3bg" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#131B2E"/><stop offset="100%" stop-color="#0B1120"/>
+                            </linearGradient>
+                            <linearGradient id="s3pro" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stop-color="#38BDF8"/><stop offset="100%" stop-color="#8B5CF6"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="280" height="600" fill="url(#s3bg)"/>
+                        <rect x="18" y="22" width="50" height="6" rx="3" fill="#22D3EE" opacity="0.55"/>
+                        <text x="20" y="58" fill="#f8fafc" font-family="Inter, sans-serif" font-size="18" font-weight="700">Presets</text>
+                        <text x="20" y="76" fill="#98a2b3" font-family="Inter, sans-serif" font-size="10">Built-in · Pro · Your saves</text>
+                        <!-- Tabs -->
+                        <g font-family="Inter, sans-serif" font-size="10" font-weight="600">
+                            <rect x="14" y="92" width="80" height="30" rx="15" fill="#38BDF8"/>
+                            <text x="54" y="111" text-anchor="middle" fill="#0b1120">All</text>
+                            <rect x="100" y="92" width="80" height="30" rx="15" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.25"/>
+                            <text x="140" y="111" text-anchor="middle" fill="#A78BFA">Pro · 30+</text>
+                            <rect x="186" y="92" width="80" height="30" rx="15" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.25"/>
+                            <text x="226" y="111" text-anchor="middle" fill="#98a2b3">Mine</text>
+                        </g>
+                        <!-- Preset list -->
+                        <g font-family="Inter, sans-serif">
+                            <!-- item 1 -->
+                            <rect x="14" y="136" width="252" height="54" rx="12" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.2"/>
+                            <circle cx="36" cy="163" r="12" fill="#38BDF8" opacity="0.2"/>
+                            <text x="36" y="167" text-anchor="middle" fill="#38BDF8" font-size="12" font-weight="700">♪</text>
+                            <text x="58" y="160" fill="#f8fafc" font-size="12" font-weight="600">1 kHz reference</text>
+                            <text x="58" y="177" fill="#98a2b3" font-size="9">Sine · no effects</text>
+                            <text x="256" y="167" text-anchor="end" fill="#667085" font-size="10">▶</text>
+                            <!-- item 2 PRO -->
+                            <rect x="14" y="198" width="252" height="54" rx="12" fill="#1a2238" stroke="url(#s3pro)" stroke-opacity="0.7"/>
+                            <circle cx="36" cy="225" r="12" fill="#A78BFA" opacity="0.2"/>
+                            <text x="36" y="229" text-anchor="middle" fill="#A78BFA" font-size="12" font-weight="700">★</text>
+                            <text x="58" y="222" fill="#f8fafc" font-size="12" font-weight="600">Analog sweep pad</text>
+                            <text x="58" y="239" fill="#98a2b3" font-size="9">Sweep + chorus + reverb</text>
+                            <rect x="220" y="214" width="36" height="16" rx="8" fill="url(#s3pro)"/>
+                            <text x="238" y="226" text-anchor="middle" fill="#0b1120" font-size="8" font-weight="700">PRO</text>
+                            <!-- item 3 -->
+                            <rect x="14" y="260" width="252" height="54" rx="12" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.2"/>
+                            <circle cx="36" cy="287" r="12" fill="#22D3EE" opacity="0.2"/>
+                            <text x="36" y="291" text-anchor="middle" fill="#22D3EE" font-size="12" font-weight="700">∿</text>
+                            <text x="58" y="284" fill="#f8fafc" font-size="12" font-weight="600">Pink noise · −3 dB</text>
+                            <text x="58" y="301" fill="#98a2b3" font-size="9">Calibration reference</text>
+                            <text x="256" y="291" text-anchor="end" fill="#667085" font-size="10">▶</text>
+                            <!-- item 4 PRO -->
+                            <rect x="14" y="322" width="252" height="54" rx="12" fill="#1a2238" stroke="url(#s3pro)" stroke-opacity="0.7"/>
+                            <circle cx="36" cy="349" r="12" fill="#A78BFA" opacity="0.2"/>
+                            <text x="36" y="353" text-anchor="middle" fill="#A78BFA" font-size="12" font-weight="700">★</text>
+                            <text x="58" y="346" fill="#f8fafc" font-size="12" font-weight="600">Bitcrushed pulse</text>
+                            <text x="58" y="363" fill="#98a2b3" font-size="9">Square · crush · echo</text>
+                            <rect x="220" y="338" width="36" height="16" rx="8" fill="url(#s3pro)"/>
+                            <text x="238" y="350" text-anchor="middle" fill="#0b1120" font-size="8" font-weight="700">PRO</text>
+                            <!-- item 5 -->
+                            <rect x="14" y="384" width="252" height="54" rx="12" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.2"/>
+                            <circle cx="36" cy="411" r="12" fill="#38BDF8" opacity="0.2"/>
+                            <text x="36" y="415" text-anchor="middle" fill="#38BDF8" font-size="12" font-weight="700">♪</text>
+                            <text x="58" y="408" fill="#f8fafc" font-size="12" font-weight="600">Speaker rattle test</text>
+                            <text x="58" y="425" fill="#98a2b3" font-size="9">Log sweep 20 Hz → 200 Hz</text>
+                            <text x="256" y="415" text-anchor="end" fill="#667085" font-size="10">▶</text>
+                        </g>
+                        <!-- upgrade banner -->
+                        <rect x="14" y="456" width="252" height="80" rx="16" fill="#1a2238" stroke="url(#s3pro)" stroke-opacity="0.6"/>
+                        <text x="26" y="480" fill="#f8fafc" font-family="Inter, sans-serif" font-size="12" font-weight="700">Unlock Full Access</text>
+                        <text x="26" y="498" fill="#98a2b3" font-family="Inter, sans-serif" font-size="9">Ad-free + 30+ pro presets + save unlimited</text>
+                        <rect x="188" y="486" width="68" height="32" rx="16" fill="url(#s3pro)"/>
+                        <text x="222" y="506" text-anchor="middle" fill="#0b1120" font-family="Inter, sans-serif" font-size="10" font-weight="700">⬆ Upgrade</text>
+                        <rect x="14" y="552" width="252" height="36" rx="18" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.15"/>
+                        <g font-family="Inter, sans-serif" font-size="9" fill="#98a2b3">
+                            <text x="52" y="574" text-anchor="middle">GEN</text>
+                            <text x="106" y="574" text-anchor="middle">FX</text>
+                            <text x="160" y="574" text-anchor="middle" font-weight="700" fill="#38BDF8">PRESETS</text>
+                            <text x="228" y="574" text-anchor="middle">EXPORT</text>
+                        </g>
+                    </svg>
+                </div>
+                <div class="phone-label">30+ Pro presets · save &amp; share</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="block" id="uses">
+        <header>
+            <h2>Built for real audio work</h2>
+            <p class="section-sub">A precise instrument for engineers, educators, developers and sound designers.</p>
+        </header>
+        <div class="uses">
+            <div class="use"><h4>🔊 Speaker &amp; headphone testing</h4><p>Sweep the audible spectrum, hunt for resonances, verify channel balance and identify rattles.</p></div>
+            <div class="use"><h4>🎛 Room &amp; hardware calibration</h4><p>Generate reference tones and shaped noise to tune EQ, measure response and test signal paths.</p></div>
+            <div class="use"><h4>🎓 DSP education</h4><p>Hear what filters, ADSR, AM/FM and bitcrushing actually do — in real time, with a scope.</p></div>
+            <div class="use"><h4>🎨 Sound design &amp; creative synthesis</h4><p>Craft tones and textures you can export as WAV/MP3 and drop into your DAW or project.</p></div>
+            <div class="use"><h4>🧪 QA &amp; bench work</h4><p>Deterministic test signals for validating audio pipelines, amps, effects pedals and drivers.</p></div>
+            <div class="use"><h4>🎧 Portable reference generator</h4><p>Studio-quality signal generation on any modern Android phone or tablet — no laptop required.</p></div>
+        </div>
+    </section>
+
+    <section class="block" id="pricing">
+        <header>
+            <h2>Simple one-time purchases</h2>
+            <p class="section-sub">No subscriptions. Pick the tier that fits — or just try the free version.</p>
+        </header>
+        <div class="tiers">
+            <div class="tier">
+                <h4>Free</h4>
+                <div class="price">$0</div>
+                <ul>
+                    <li>Full tone generator</li>
+                    <li>Effects chain &amp; scope</li>
+                    <li>Builtin presets</li>
+                    <li class="no">Contains ads</li>
+                    <li class="no">No audio export</li>
+                </ul>
+            </div>
+            <div class="tier">
+                <h4>Remove Ads</h4>
+                <div class="price">$1.99 <small>one-time</small></div>
+                <ul>
+                    <li>Everything in Free</li>
+                    <li>No ads, ever</li>
+                </ul>
+            </div>
+            <div class="tier">
+                <h4>PRO</h4>
+                <div class="price">$4.99 <small>one-time</small></div>
+                <ul>
+                    <li>Everything in Remove Ads</li>
+                    <li>WAV export (16-bit PCM)</li>
+                    <li>MP3 export</li>
+                </ul>
+            </div>
+            <div class="tier featured">
+                <span class="tag">Best value</span>
+                <h4>Best Value</h4>
+                <div class="price">$8.99 <small>one-time</small></div>
+                <ul>
+                    <li>Everything in PRO</li>
+                    <li>30+ professional presets</li>
+                    <li>Save unlimited custom presets</li>
+                    <li>Export &amp; share presets</li>
+                    <li>7 premium themes</li>
+                    <li>Support-the-dev badge</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="block" id="tech">
+        <header>
+            <h2>Under the hood</h2>
+            <p class="section-sub">Open-source building blocks, a performant native engine, and a modern cross-platform UI.</p>
+        </header>
+        <div class="tech">
+            <span class="chip">.NET 9</span>
+            <span class="chip">.NET MAUI</span>
+            <span class="chip">Native C++ engine</span>
+            <span class="chip">miniaudio</span>
+            <span class="chip">DaisySP</span>
+            <span class="chip">PFFFT</span>
+            <span class="chip">LAME (MP3)</span>
+            <span class="chip">SkiaSharp</span>
+            <span class="chip">AOT compiled</span>
+            <span class="chip">16 KB page-aligned</span>
+        </div>
+    </section>
+
+    <section class="block" id="faq">
+        <header>
+            <h2>Frequently asked questions</h2>
+            <p class="section-sub">If something's still unclear, reach out — contact link is in the footer.</p>
+        </header>
+        <div class="faq">
+            <details>
+                <summary>Which platforms is ToneGenPro available on?</summary>
+                <p>
+                    ToneGenPro is published on the Google Play Store for Android 9.0 (API 28) and newer, on both 64-bit ARM
+                    (<code>arm64-v8a</code>) and 64-bit Intel (<code>x86_64</code>) devices. The project is built with .NET MAUI so
+                    macOS (Mac Catalyst) and Windows builds exist in the repo, but only the Android version is distributed publicly today.
+                </p>
+            </details>
+            <details>
+                <summary>Is there a subscription? Any recurring fees?</summary>
+                <p>
+                    No. Every paid feature is a one-time Google Play purchase: <strong>Remove Ads</strong>, <strong>PRO</strong>, or
+                    <strong>Best Value</strong>. Buy it once, it stays unlocked. The free tier is fully functional for generating tones and
+                    testing signal paths.
+                </p>
+            </details>
+            <details>
+                <summary>What's the difference between PRO and Best Value?</summary>
+                <p>
+                    <strong>PRO</strong> unlocks WAV (16-bit PCM) and MP3 audio export. <strong>Best Value</strong> includes everything in
+                    PRO plus the 30+ professional preset library, unlimited custom preset saving, export/share of presets, 7 premium
+                    themes, and the support-the-dev badge.
+                </p>
+            </details>
+            <details>
+                <summary>What kind of precision does the generator deliver?</summary>
+                <p>
+                    All oscillators, sweeps, modulators and effects run on a native C++ engine (miniaudio + DaisySP), sample-accurate at
+                    the device's output rate (typically 48 kHz). The on-screen oscilloscope is wired to the same audio buffer so what you
+                    see is what you hear.
+                </p>
+            </details>
+            <details>
+                <summary>Can I export what I hear?</summary>
+                <p>
+                    Yes, with the PRO or Best Value tier. Any patch — including the current oscillator, noise, modulation, ADSR and the
+                    full FX chain — can be rendered to a 16-bit PCM WAV or a LAME-encoded MP3 file and saved to your device.
+                </p>
+            </details>
+            <details>
+                <summary>Does ToneGenPro collect personal data or microphone audio?</summary>
+                <p>
+                    No. The app does not record microphone input, does not transmit audio off-device, and ships no third-party analytics or
+                    crash SDKs. Ads in the free tier are served by Google AdMob with GDPR consent handled through Google's UMP SDK. Full
+                    details are in the
+                    <a href="https://ivanessb.github.io/tonegenpro-privacy/" target="_blank" rel="noopener">privacy policy</a>.
+                </p>
+            </details>
+            <details>
+                <summary>What if I'm targeting Android 15+? Is the app 16 KB page-size compatible?</summary>
+                <p>
+                    Yes. Every native library inside the app bundle is linked with 16 KB page alignment, including the ToneGenPro native
+                    audio engine, SkiaSharp, and the .NET AOT libraries. Google Play's bundle explorer reports
+                    <em>"Memory page size: Supports 16 KB"</em> for recent releases.
+                </p>
+            </details>
+            <details>
+                <summary>Is the source code open?</summary>
+                <p>
+                    The app project source is on <a href="https://github.com/ivanessb/ToneGenPro" target="_blank" rel="noopener">GitHub</a>.
+                    Binaries are published only through the Google Play Store.
+                </p>
+            </details>
+        </div>
+    </section>
+
+    <section class="block" id="changelog">
+        <header>
+            <h2>Recent releases</h2>
+            <p class="section-sub">Latest updates shipped to the Play Store.</p>
+        </header>
+        <div class="log">
+            <div class="entry">
+                <div class="head">
+                    <h4>1.13.1</h4>
+                    <span class="pill">Latest</span>
+                    <span class="when">build 24</span>
+                </div>
+                <ul>
+                    <li>Rebuild on top of 1.13.0 after verifying every native library is 16 KB page-aligned.</li>
+                    <li>Build pipeline now regenerates <code>symbols.zip</code> automatically for Play Console's native debug symbols upload.</li>
+                </ul>
+            </div>
+            <div class="entry">
+                <div class="head">
+                    <h4>1.13.0</h4>
+                    <span class="pill">Android 15 ready</span>
+                    <span class="when">build 23</span>
+                </div>
+                <ul>
+                    <li>Upgraded SkiaSharp native libraries so <code>libSkiaSharp.so</code> ships with 16 KB page alignment — resolves the Play Console <em>"Does not support 16 KB"</em> warning on Android 15+.</li>
+                    <li>Preset banner corrected to advertise 30+ professional presets (the library actually ships 30).</li>
+                    <li>Consistent copy across About page, Paywall, and locked-feature prompts.</li>
+                </ul>
+            </div>
+            <div class="entry">
+                <div class="head">
+                    <h4>1.12.0</h4>
+                    <span class="when">build 22</span>
+                </div>
+                <ul>
+                    <li>Expanded the professional preset library with 10 additional presets covering sweeps, modulation and effects-heavy patches.</li>
+                    <li>Refreshed app icon, splash screen, About-page header and menu artwork.</li>
+                </ul>
+            </div>
+            <div class="entry">
+                <div class="head">
+                    <h4>1.8.0 – 1.11.x</h4>
+                    <span class="when">earlier</span>
+                </div>
+                <ul>
+                    <li>Inter typography system-wide for a cleaner, more readable UI.</li>
+                    <li>Sweep and ADSR export checkbox fixes.</li>
+                    <li>FM artifact fix and tooltip system improvements.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div>© 2025–2026 Ioan Florucza · ToneGenPro</div>
+        <div class="foot-links">
+            <a href="https://play.google.com/store/apps/details?id=com.ioan.florucza.tonegenpro" target="_blank" rel="noopener">Google Play</a>
+            <a href="https://github.com/ivanessb/ToneGenPro" target="_blank" rel="noopener">Source on GitHub</a>
+            <a href="https://ivanessb.github.io/tonegenpro-privacy/" target="_blank" rel="noopener">Privacy Policy</a>
+            <a href="mailto:ioan.florucza@gmail.com">Contact</a>
+        </div>
+    </footer>
+
+</div>
+</body>
+</html>
