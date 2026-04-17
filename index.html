@@ -159,27 +159,20 @@
         .tech { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
         .chip { padding: 6px 12px; border-radius: 999px; font-size: 0.82rem; background: var(--surface); border: 1px solid var(--surface-border); color: var(--muted); }
 
-        /* ===== Screenshots (device mockups) ===== */
-        .shots { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); justify-items: center; align-items: end; }
+        /* ===== Screenshots (real app screens) ===== */
+        .shots { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); justify-items: center; }
         .phone {
-            width: 100%; max-width: 260px; aspect-ratio: 9 / 19;
-            border-radius: 36px; padding: 10px;
+            width: 100%; max-width: 240px; aspect-ratio: 9 / 19;
+            border-radius: 28px; padding: 8px;
             background: linear-gradient(160deg, #1a2238, #0b1120);
             box-shadow: 0 24px 60px rgba(11, 17, 32, 0.45), inset 0 0 0 1.5px rgba(56, 189, 248, 0.18);
-            position: relative;
+            overflow: hidden;
+            transition: transform .2s ease, box-shadow .2s ease;
         }
-        .phone::before {
-            content: ""; position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
-            width: 60px; height: 6px; border-radius: 999px; background: #0b1120;
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-        }
-        .phone .screen {
-            width: 100%; height: 100%; border-radius: 28px; overflow: hidden;
-            background: #0f1626;
-            display: block;
-        }
-        .phone-label {
-            margin-top: 10px; text-align: center; color: var(--muted); font-size: 0.88rem;
+        .phone:hover { transform: translateY(-3px); box-shadow: 0 28px 70px rgba(56, 189, 248, 0.25), inset 0 0 0 1.5px rgba(56, 189, 248, 0.28); }
+        .phone img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+            border-radius: 22px; background: #0f1626;
         }
 
         /* ===== FAQ ===== */
@@ -335,226 +328,26 @@
     <section class="block" id="shots">
         <header>
             <h2>A glance inside the app</h2>
-            <p class="section-sub">Clean, touch-first layout. Every control is one tap away, and the oscilloscope draws in real time.</p>
+            <p class="section-sub">Real screens from the Android build — generator, effects, presets, export and more.</p>
         </header>
 
         <div class="shots">
-            <!-- Screen 1: Main oscillator -->
-            <div>
-                <div class="phone">
-                    <svg class="screen" viewBox="0 0 280 600" xmlns="http://www.w3.org/2000/svg" aria-label="ToneGenPro main generator screen">
-                        <defs>
-                            <linearGradient id="s1bg" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#131B2E"/><stop offset="100%" stop-color="#0B1120"/>
-                            </linearGradient>
-                            <linearGradient id="s1wave" x1="0" y1="0" x2="1" y2="0">
-                                <stop offset="0%" stop-color="#38BDF8"/><stop offset="100%" stop-color="#22D3EE"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="280" height="600" fill="url(#s1bg)"/>
-                        <!-- status bar -->
-                        <rect x="18" y="22" width="50" height="6" rx="3" fill="#38BDF8" opacity="0.55"/>
-                        <circle cx="260" cy="25" r="3" fill="#98a2b3"/>
-                        <!-- title -->
-                        <text x="20" y="58" fill="#f8fafc" font-family="Inter, sans-serif" font-size="18" font-weight="700">ToneGenPro</text>
-                        <text x="20" y="76" fill="#98a2b3" font-family="Inter, sans-serif" font-size="10">LEVEL · SMOOTH · SWEEP · NOISE</text>
-                        <!-- scope card -->
-                        <rect x="14" y="92" width="252" height="130" rx="16" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.2"/>
-                        <line x1="14" y1="157" x2="266" y2="157" stroke="#38BDF8" stroke-opacity="0.15"/>
-                        <path d="M20 157 C50 157, 60 110, 90 110 C120 110, 130 204, 160 204 C190 204, 200 157, 230 157 C250 157, 256 147, 266 157"
-                              fill="none" stroke="url(#s1wave)" stroke-width="3" stroke-linecap="round"/>
-                        <text x="26" y="112" fill="#38BDF8" font-family="Inter, sans-serif" font-size="9" font-weight="600">440.0 Hz · SINE</text>
-                        <!-- freq big number -->
-                        <text x="140" y="270" text-anchor="middle" fill="#f8fafc" font-family="Inter, sans-serif" font-size="44" font-weight="700">440</text>
-                        <text x="140" y="290" text-anchor="middle" fill="#98a2b3" font-family="Inter, sans-serif" font-size="11">Hz</text>
-                        <!-- waveform pills -->
-                        <g font-family="Inter, sans-serif" font-size="10" font-weight="600">
-                            <rect x="16" y="316" width="58" height="26" rx="13" fill="#38BDF8"/>
-                            <text x="45" y="333" text-anchor="middle" fill="#0b1120">SINE</text>
-                            <rect x="80" y="316" width="58" height="26" rx="13" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.25"/>
-                            <text x="109" y="333" text-anchor="middle" fill="#98a2b3">SQR</text>
-                            <rect x="144" y="316" width="58" height="26" rx="13" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.25"/>
-                            <text x="173" y="333" text-anchor="middle" fill="#98a2b3">TRI</text>
-                            <rect x="208" y="316" width="58" height="26" rx="13" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.25"/>
-                            <text x="237" y="333" text-anchor="middle" fill="#98a2b3">SAW</text>
-                        </g>
-                        <!-- knobs -->
-                        <g>
-                            <circle cx="60" cy="400" r="26" fill="#1a2238" stroke="#8B5CF6" stroke-opacity="0.4"/>
-                            <circle cx="60" cy="400" r="20" fill="none" stroke="#A78BFA" stroke-width="3" stroke-dasharray="90 40"/>
-                            <text x="60" y="443" text-anchor="middle" fill="#98a2b3" font-family="Inter, sans-serif" font-size="9">LEVEL</text>
-                            <circle cx="140" cy="400" r="26" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.4"/>
-                            <circle cx="140" cy="400" r="20" fill="none" stroke="#38BDF8" stroke-width="3" stroke-dasharray="60 70"/>
-                            <text x="140" y="443" text-anchor="middle" fill="#98a2b3" font-family="Inter, sans-serif" font-size="9">SMOOTH</text>
-                            <circle cx="220" cy="400" r="26" fill="#1a2238" stroke="#22D3EE" stroke-opacity="0.4"/>
-                            <circle cx="220" cy="400" r="20" fill="none" stroke="#22D3EE" stroke-width="3" stroke-dasharray="110 20"/>
-                            <text x="220" y="443" text-anchor="middle" fill="#98a2b3" font-family="Inter, sans-serif" font-size="9">DETUNE</text>
-                        </g>
-                        <!-- play bar -->
-                        <rect x="14" y="480" width="252" height="54" rx="18" fill="url(#s1wave)"/>
-                        <text x="140" y="514" text-anchor="middle" fill="#0b1120" font-family="Inter, sans-serif" font-size="14" font-weight="700">▶  PLAY</text>
-                        <!-- tab bar -->
-                        <rect x="14" y="552" width="252" height="36" rx="18" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.15"/>
-                        <g font-family="Inter, sans-serif" font-size="9" fill="#98a2b3">
-                            <text x="52" y="574" text-anchor="middle" font-weight="700" fill="#38BDF8">GEN</text>
-                            <text x="106" y="574" text-anchor="middle">FX</text>
-                            <text x="160" y="574" text-anchor="middle">PRESETS</text>
-                            <text x="228" y="574" text-anchor="middle">EXPORT</text>
-                        </g>
-                    </svg>
-                </div>
-                <div class="phone-label">Main generator · real-time scope</div>
-            </div>
-
-            <!-- Screen 2: Effects chain -->
-            <div>
-                <div class="phone">
-                    <svg class="screen" viewBox="0 0 280 600" xmlns="http://www.w3.org/2000/svg" aria-label="ToneGenPro effects chain screen">
-                        <defs>
-                            <linearGradient id="s2bg" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#131B2E"/><stop offset="100%" stop-color="#0B1120"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="280" height="600" fill="url(#s2bg)"/>
-                        <rect x="18" y="22" width="50" height="6" rx="3" fill="#8B5CF6" opacity="0.55"/>
-                        <text x="20" y="58" fill="#f8fafc" font-family="Inter, sans-serif" font-size="18" font-weight="700">Effects chain</text>
-                        <text x="20" y="76" fill="#98a2b3" font-family="Inter, sans-serif" font-size="10">FILTERS · ECHO · REVERB · CHORUS · CRUSH</text>
-                        <!-- FX modules -->
-                        <g font-family="Inter, sans-serif">
-                            <!-- Filter -->
-                            <rect x="14" y="96" width="252" height="72" rx="14" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.25"/>
-                            <text x="26" y="118" fill="#38BDF8" font-size="11" font-weight="700">⌁ FILTERS</text>
-                            <text x="250" y="118" text-anchor="end" fill="#22D3EE" font-size="10" font-weight="700">ON</text>
-                            <path d="M26 148 L90 148 Q110 148, 120 130 Q135 108, 170 140 L250 148" stroke="#38BDF8" stroke-width="2" fill="none"/>
-                            <text x="26" y="163" fill="#98a2b3" font-size="9">LP · 1.2 kHz · Q 0.9</text>
-                            <!-- Echo -->
-                            <rect x="14" y="180" width="252" height="72" rx="14" fill="#1a2238" stroke="#A78BFA" stroke-opacity="0.35"/>
-                            <text x="26" y="202" fill="#A78BFA" font-size="11" font-weight="700">⟲ ECHO</text>
-                            <text x="250" y="202" text-anchor="end" fill="#22D3EE" font-size="10" font-weight="700">ON</text>
-                            <g stroke="#A78BFA" stroke-linecap="round">
-                                <line x1="30"  y1="230" x2="30"  y2="240" stroke-width="4"/>
-                                <line x1="60"  y1="226" x2="60"  y2="244" stroke-width="4" opacity="0.85"/>
-                                <line x1="90"  y1="229" x2="90"  y2="241" stroke-width="4" opacity="0.7"/>
-                                <line x1="120" y1="231" x2="120" y2="239" stroke-width="4" opacity="0.55"/>
-                                <line x1="150" y1="232" x2="150" y2="238" stroke-width="4" opacity="0.4"/>
-                                <line x1="180" y1="233" x2="180" y2="237" stroke-width="4" opacity="0.3"/>
-                                <line x1="210" y1="234" x2="210" y2="236" stroke-width="4" opacity="0.2"/>
-                            </g>
-                            <text x="26" y="246" fill="#98a2b3" font-size="9">380 ms · Fb 0.45</text>
-                            <!-- Reverb -->
-                            <rect x="14" y="264" width="252" height="72" rx="14" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.25"/>
-                            <text x="26" y="286" fill="#22D3EE" font-size="11" font-weight="700">⌖ REVERB</text>
-                            <text x="250" y="286" text-anchor="end" fill="#22D3EE" font-size="10" font-weight="700">ON</text>
-                            <text x="26" y="320" fill="#98a2b3" font-size="9">Hall · Size 0.72 · Mix 0.35</text>
-                            <!-- Chorus -->
-                            <rect x="14" y="348" width="124" height="72" rx="14" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.2"/>
-                            <text x="26" y="370" fill="#98a2b3" font-size="11" font-weight="700">CHORUS</text>
-                            <text x="128" y="370" text-anchor="end" fill="#667085" font-size="10">OFF</text>
-                            <!-- Bitcrusher -->
-                            <rect x="142" y="348" width="124" height="72" rx="14" fill="#1a2238" stroke="#8B5CF6" stroke-opacity="0.4"/>
-                            <text x="154" y="370" fill="#A78BFA" font-size="11" font-weight="700">CRUSH</text>
-                            <text x="256" y="370" text-anchor="end" fill="#22D3EE" font-size="10" font-weight="700">ON</text>
-                            <text x="154" y="402" fill="#98a2b3" font-size="9">8-bit · 12 kHz</text>
-                            <!-- Dry/wet master -->
-                            <rect x="14" y="432" width="252" height="46" rx="14" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.18"/>
-                            <text x="26" y="454" fill="#98a2b3" font-size="10" font-weight="700">MASTER WET</text>
-                            <rect x="120" y="450" width="130" height="6" rx="3" fill="#0b1120"/>
-                            <rect x="120" y="450" width="82" height="6" rx="3" fill="#38BDF8"/>
-                        </g>
-                        <rect x="14" y="552" width="252" height="36" rx="18" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.15"/>
-                        <g font-family="Inter, sans-serif" font-size="9" fill="#98a2b3">
-                            <text x="52" y="574" text-anchor="middle">GEN</text>
-                            <text x="106" y="574" text-anchor="middle" font-weight="700" fill="#38BDF8">FX</text>
-                            <text x="160" y="574" text-anchor="middle">PRESETS</text>
-                            <text x="228" y="574" text-anchor="middle">EXPORT</text>
-                        </g>
-                    </svg>
-                </div>
-                <div class="phone-label">Full DSP effects chain</div>
-            </div>
-
-            <!-- Screen 3: Presets -->
-            <div>
-                <div class="phone">
-                    <svg class="screen" viewBox="0 0 280 600" xmlns="http://www.w3.org/2000/svg" aria-label="ToneGenPro presets screen">
-                        <defs>
-                            <linearGradient id="s3bg" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#131B2E"/><stop offset="100%" stop-color="#0B1120"/>
-                            </linearGradient>
-                            <linearGradient id="s3pro" x1="0" y1="0" x2="1" y2="0">
-                                <stop offset="0%" stop-color="#38BDF8"/><stop offset="100%" stop-color="#8B5CF6"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="280" height="600" fill="url(#s3bg)"/>
-                        <rect x="18" y="22" width="50" height="6" rx="3" fill="#22D3EE" opacity="0.55"/>
-                        <text x="20" y="58" fill="#f8fafc" font-family="Inter, sans-serif" font-size="18" font-weight="700">Presets</text>
-                        <text x="20" y="76" fill="#98a2b3" font-family="Inter, sans-serif" font-size="10">Built-in · Pro · Your saves</text>
-                        <!-- Tabs -->
-                        <g font-family="Inter, sans-serif" font-size="10" font-weight="600">
-                            <rect x="14" y="92" width="80" height="30" rx="15" fill="#38BDF8"/>
-                            <text x="54" y="111" text-anchor="middle" fill="#0b1120">All</text>
-                            <rect x="100" y="92" width="80" height="30" rx="15" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.25"/>
-                            <text x="140" y="111" text-anchor="middle" fill="#A78BFA">Pro · 30+</text>
-                            <rect x="186" y="92" width="80" height="30" rx="15" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.25"/>
-                            <text x="226" y="111" text-anchor="middle" fill="#98a2b3">Mine</text>
-                        </g>
-                        <!-- Preset list -->
-                        <g font-family="Inter, sans-serif">
-                            <!-- item 1 -->
-                            <rect x="14" y="136" width="252" height="54" rx="12" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.2"/>
-                            <circle cx="36" cy="163" r="12" fill="#38BDF8" opacity="0.2"/>
-                            <text x="36" y="167" text-anchor="middle" fill="#38BDF8" font-size="12" font-weight="700">♪</text>
-                            <text x="58" y="160" fill="#f8fafc" font-size="12" font-weight="600">1 kHz reference</text>
-                            <text x="58" y="177" fill="#98a2b3" font-size="9">Sine · no effects</text>
-                            <text x="256" y="167" text-anchor="end" fill="#667085" font-size="10">▶</text>
-                            <!-- item 2 PRO -->
-                            <rect x="14" y="198" width="252" height="54" rx="12" fill="#1a2238" stroke="url(#s3pro)" stroke-opacity="0.7"/>
-                            <circle cx="36" cy="225" r="12" fill="#A78BFA" opacity="0.2"/>
-                            <text x="36" y="229" text-anchor="middle" fill="#A78BFA" font-size="12" font-weight="700">★</text>
-                            <text x="58" y="222" fill="#f8fafc" font-size="12" font-weight="600">Analog sweep pad</text>
-                            <text x="58" y="239" fill="#98a2b3" font-size="9">Sweep + chorus + reverb</text>
-                            <rect x="220" y="214" width="36" height="16" rx="8" fill="url(#s3pro)"/>
-                            <text x="238" y="226" text-anchor="middle" fill="#0b1120" font-size="8" font-weight="700">PRO</text>
-                            <!-- item 3 -->
-                            <rect x="14" y="260" width="252" height="54" rx="12" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.2"/>
-                            <circle cx="36" cy="287" r="12" fill="#22D3EE" opacity="0.2"/>
-                            <text x="36" y="291" text-anchor="middle" fill="#22D3EE" font-size="12" font-weight="700">∿</text>
-                            <text x="58" y="284" fill="#f8fafc" font-size="12" font-weight="600">Pink noise · −3 dB</text>
-                            <text x="58" y="301" fill="#98a2b3" font-size="9">Calibration reference</text>
-                            <text x="256" y="291" text-anchor="end" fill="#667085" font-size="10">▶</text>
-                            <!-- item 4 PRO -->
-                            <rect x="14" y="322" width="252" height="54" rx="12" fill="#1a2238" stroke="url(#s3pro)" stroke-opacity="0.7"/>
-                            <circle cx="36" cy="349" r="12" fill="#A78BFA" opacity="0.2"/>
-                            <text x="36" y="353" text-anchor="middle" fill="#A78BFA" font-size="12" font-weight="700">★</text>
-                            <text x="58" y="346" fill="#f8fafc" font-size="12" font-weight="600">Bitcrushed pulse</text>
-                            <text x="58" y="363" fill="#98a2b3" font-size="9">Square · crush · echo</text>
-                            <rect x="220" y="338" width="36" height="16" rx="8" fill="url(#s3pro)"/>
-                            <text x="238" y="350" text-anchor="middle" fill="#0b1120" font-size="8" font-weight="700">PRO</text>
-                            <!-- item 5 -->
-                            <rect x="14" y="384" width="252" height="54" rx="12" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.2"/>
-                            <circle cx="36" cy="411" r="12" fill="#38BDF8" opacity="0.2"/>
-                            <text x="36" y="415" text-anchor="middle" fill="#38BDF8" font-size="12" font-weight="700">♪</text>
-                            <text x="58" y="408" fill="#f8fafc" font-size="12" font-weight="600">Speaker rattle test</text>
-                            <text x="58" y="425" fill="#98a2b3" font-size="9">Log sweep 20 Hz → 200 Hz</text>
-                            <text x="256" y="415" text-anchor="end" fill="#667085" font-size="10">▶</text>
-                        </g>
-                        <!-- upgrade banner -->
-                        <rect x="14" y="456" width="252" height="80" rx="16" fill="#1a2238" stroke="url(#s3pro)" stroke-opacity="0.6"/>
-                        <text x="26" y="480" fill="#f8fafc" font-family="Inter, sans-serif" font-size="12" font-weight="700">Unlock Full Access</text>
-                        <text x="26" y="498" fill="#98a2b3" font-family="Inter, sans-serif" font-size="9">Ad-free + 30+ pro presets + save unlimited</text>
-                        <rect x="188" y="486" width="68" height="32" rx="16" fill="url(#s3pro)"/>
-                        <text x="222" y="506" text-anchor="middle" fill="#0b1120" font-family="Inter, sans-serif" font-size="10" font-weight="700">⬆ Upgrade</text>
-                        <rect x="14" y="552" width="252" height="36" rx="18" fill="#1a2238" stroke="#38BDF8" stroke-opacity="0.15"/>
-                        <g font-family="Inter, sans-serif" font-size="9" fill="#98a2b3">
-                            <text x="52" y="574" text-anchor="middle">GEN</text>
-                            <text x="106" y="574" text-anchor="middle">FX</text>
-                            <text x="160" y="574" text-anchor="middle" font-weight="700" fill="#38BDF8">PRESETS</text>
-                            <text x="228" y="574" text-anchor="middle">EXPORT</text>
-                        </g>
-                    </svg>
-                </div>
-                <div class="phone-label">30+ Pro presets · save &amp; share</div>
-            </div>
+            <div class="phone"><img src="screenshots/screenshot.png" alt="ToneGenPro — main generator" loading="lazy"></div>
+            <div class="phone"><img src="screenshots/screenshot1.png" alt="ToneGenPro screen" loading="lazy"></div>
+            <div class="phone"><img src="screenshots/screenshot2.png" alt="ToneGenPro screen" loading="lazy"></div>
+            <div class="phone"><img src="screenshots/screenshot3.png" alt="ToneGenPro screen" loading="lazy"></div>
+            <div class="phone"><img src="screenshots/screenshot4.png" alt="ToneGenPro screen" loading="lazy"></div>
+            <div class="phone"><img src="screenshots/screenshot5.png" alt="ToneGenPro screen" loading="lazy"></div>
+            <div class="phone"><img src="screenshots/screenshot6.png" alt="ToneGenPro screen" loading="lazy"></div>
+            <div class="phone"><img src="screenshots/screenshot7.png" alt="ToneGenPro screen" loading="lazy"></div>
+            <div class="phone"><img src="screenshots/screenshot8.png" alt="ToneGenPro screen" loading="lazy"></div>
+            <div class="phone"><img src="screenshots/screenshot9.png" alt="ToneGenPro screen" loading="lazy"></div>
+            <div class="phone"><img src="screenshots/screenshot10.png" alt="ToneGenPro screen" loading="lazy"></div>
+            <div class="phone"><img src="screenshots/screenshot11.png" alt="ToneGenPro screen" loading="lazy"></div>
+            <div class="phone"><img src="screenshots/screenshot12.png" alt="ToneGenPro screen" loading="lazy"></div>
+            <div class="phone"><img src="screenshots/screenshot13.png" alt="ToneGenPro screen" loading="lazy"></div>
+            <div class="phone"><img src="screenshots/screenshot14.png" alt="ToneGenPro screen" loading="lazy"></div>
+            <div class="phone"><img src="screenshots/screenshot15.png" alt="ToneGenPro screen" loading="lazy"></div>
         </div>
     </section>
 
